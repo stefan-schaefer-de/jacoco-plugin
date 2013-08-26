@@ -261,41 +261,35 @@ public class JacocoPublisher extends Recorder {
 	
 	protected static FilePath[] resolveDirPaths(AbstractBuild<?, ?> build, BuildListener listener, final String input)
 	{
-try
-{
-int i = 111;
-	
 		final PrintStream logger = listener.getLogger();
 		FilePath[] directoryPaths = null;
-
-  logger.println("[Telekom JaCoCo plugin test] resolveDirPaths input: " + input );		
 
 		try 
 		{
 			directoryPaths = build.getWorkspace().act( new FilePath.FileCallable<FilePath[]>()
 			{
-			    static final long serialVersionUID = 1552178457453558870L;
+			  static final long serialVersionUID = 1552178457453558870L;
 
 				public FilePath[] invoke(File f, VirtualChannel channel) throws IOException
 				{
-                    FilePath base = new FilePath(f);
+          FilePath base = new FilePath(f);
 					ArrayList<FilePath> localDirectoryPaths= new ArrayList<FilePath>();
 					String[] includes = input.split(",");
 					DirectoryScanner ds = new DirectoryScanner();
 
-			        ds.setIncludes(includes);
-			        ds.setCaseSensitive(false);
-			        ds.setBasedir(f);
-			        ds.scan();
-			        String[] dirs = ds.getIncludedDirectories();
+			    ds.setIncludes(includes);
+			    ds.setCaseSensitive(false);
+			    ds.setBasedir(f);
+			    ds.scan();
+			    String[] dirs = ds.getIncludedDirectories();
 			        
-			        for (String dir : dirs) {
-                        localDirectoryPaths.add(base.child(dir));
-			        }
-			        FilePath[] lfp = new FilePath [0];//trick to have an empty array as a parameter, so the returned array will contain the elements
+			    for (String dir : dirs) {
+            localDirectoryPaths.add(base.child(dir));
+			    }
+			    FilePath[] lfp = new FilePath [0];//trick to have an empty array as a parameter, so the returned array will contain the elements
 
-			        return localDirectoryPaths.toArray(lfp);
-	            }
+			   return localDirectoryPaths.toArray(lfp);
+	    	}
 			});
 			
 		} catch(InterruptedException ie) {
@@ -307,18 +301,8 @@ int i = 111;
 		{
 		  t.printStackTrace();
 		}
-		
-  logger.println("[Telekom JaCoCo plugin test] resolveDirPaths found directoryPaths: " +directoryPaths );
 
 		return directoryPaths;
-		
-		}
-		catch( Throwable t )
-		{
-		  t.printStackTrace();
-		
-		 throw new RuntimeException( "can not resolveDirPaths" , t );
-		}
 	}
 	
 	/* 

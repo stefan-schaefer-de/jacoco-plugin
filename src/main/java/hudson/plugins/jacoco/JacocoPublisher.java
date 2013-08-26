@@ -259,17 +259,30 @@ public class JacocoPublisher extends Recorder {
         return input;
     }
 	
-	protected static FilePath[] resolveDirPaths(AbstractBuild<?, ?> build, BuildListener listener, final String input) {
+	protected static FilePath[] resolveDirPaths(AbstractBuild<?, ?> build, BuildListener listener, final String input)
+	{
+try
+{
+int i = 111;
+	
 		final PrintStream logger = listener.getLogger();
 		FilePath[] directoryPaths = null;
-		try {
-			directoryPaths = build.getWorkspace().act(new FilePath.FileCallable<FilePath[]>() {
-				public FilePath[] invoke(File f, VirtualChannel channel) throws IOException {
+
+  logger.println("[Telekom JaCoCo plugin test] resolveDirPaths input: " + input );		
+
+		try 
+		{
+			directoryPaths = build.getWorkspace().act( new FilePath.FileCallable<FilePath[]>()
+			{
+			    static final long serialVersionUID = 1552178457453558870L;
+
+				public FilePath[] invoke(File f, VirtualChannel channel) throws IOException
+				{
                     FilePath base = new FilePath(f);
 					ArrayList<FilePath> localDirectoryPaths= new ArrayList<FilePath>();
 					String[] includes = input.split(",");
 					DirectoryScanner ds = new DirectoryScanner();
-			        
+
 			        ds.setIncludes(includes);
 			        ds.setCaseSensitive(false);
 			        ds.setBasedir(f);
@@ -279,7 +292,8 @@ public class JacocoPublisher extends Recorder {
 			        for (String dir : dirs) {
                         localDirectoryPaths.add(base.child(dir));
 			        }
-			        FilePath[] lfp = {};//trick to have an empty array as a parameter, so the returned array will contain the elements
+			        FilePath[] lfp = new FilePath [0];//trick to have an empty array as a parameter, so the returned array will contain the elements
+
 			        return localDirectoryPaths.toArray(lfp);
 	            }
 			});
@@ -289,7 +303,22 @@ public class JacocoPublisher extends Recorder {
 		} catch(IOException io) {
 			io.printStackTrace();
 		}
+		catch( Throwable t )
+		{
+		  t.printStackTrace();
+		}
+		
+  logger.println("[Telekom JaCoCo plugin test] resolveDirPaths found directoryPaths: " +directoryPaths );
+
 		return directoryPaths;
+		
+		}
+		catch( Throwable t )
+		{
+		  t.printStackTrace();
+		
+		 throw new RuntimeException( "can not resolveDirPaths" , t );
+		}
 	}
 	
 	/* 
@@ -338,12 +367,18 @@ public class JacocoPublisher extends Recorder {
         logger.print("[JaCoCo plugin] Saving matched execfiles: ");
         dir.addExecFiles(matchedExecFiles);
         logger.print(" " + Util.join(matchedExecFiles," "));
+
+  logger.println("[Telekom JaCoCo plugin test] perform classPattern: " + classPattern );		
+		
         matchedClassDirs = resolveDirPaths(build, listener, classPattern);
-        logger.print("\n[JaCoCo plugin] Saving matched class directories: ");
+        logger.print("\n[JaCoCo plugin] Saving matched class directories: " + matchedClassDirs );
         for (FilePath file : matchedClassDirs) {
             dir.saveClassesFrom(file);
         	logger.print(" " + file);
         }
+
+		logger.println("[Telekom JaCoCo plugin test] perform sourcePattern: " + sourcePattern );		
+		
         matchedSrcDirs = resolveDirPaths(build, listener, sourcePattern);
         logger.print("\n[JaCoCo plugin] Saving matched source directories: ");
         for (FilePath file : matchedSrcDirs) {
